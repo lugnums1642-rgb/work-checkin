@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>บันทึกเวลาเข้า-ออกงาน</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Sarabun',sans-serif;background:#f4f6f9;color:#222;font-size:15px;padding:16px}
+  h1{font-size:18px;font-weight:600;text-align:center;margin-bottom:16px;color:#1a1a2e}
+  .card{background:#fff;border-radius:12px;border:1px solid #e2e6ea;padding:16px;margin-bottom:12px}
+  .section-title{font-size:13px;font-weight:600;color:#666;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+  label{font-size:13px;color:#666;display:block;margin-bottom:5px}
+  input,textarea,select{width:100%;padding:9px 12px;border:1px solid #dde2ea;border-radius:8px;font-size:15px;font-family:'Sarabun',sans-serif;background:#fafbfc;color:#222;outline:none;transition:border 0.15s}
+  input:focus,textarea:focus{border-color:#378add}
+  textarea{resize:vertical;min-height:60px}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .field{display:flex;flex-direction:column}
+  .status-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+  .status-btn{border:1px solid #dde2ea;border-radius:8px;padding:6px 13px;font-size:13px;cursor:pointer;background:#fff;color:#444;font-family:'Sarabun',sans-serif;transition:all 0.15s}
+  .status-btn.s-green{background:#eaf7f0;color:#1a7a4a;border-color:#a3d9b8}
+  .status-btn.s-amber{background:#fff8e6;color:#9a6500;border-color:#f5d37a}
+  .status-btn.s-red{background:#fdecea;color:#b71c1c;border-color:#f5a5a5}
+  .hours-box{background:#f4f6f9;border-radius:8px;padding:10px 13px;font-size:14px;color:#666;min-height:38px}
+  .photo-area{border:1.5px dashed #bfc8d4;border-radius:8px;padding:14px;text-align:center;cursor:pointer;background:#f8fafc;position:relative;transition:background 0.15s}
+  .photo-area:hover{background:#eef3f9}
+  .photo-area input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+  .photo-area .icon{font-size:22px;color:#aab4be}
+  .photo-area .ph-label{font-size:12px;color:#999;margin-top:4px}
+  .photo-preview{width:100%;height:110px;object-fit:cover;border-radius:8px;margin-top:8px;display:none;border:1px solid #e2e6ea}
+  .remove-btn{font-size:12px;color:#e53935;cursor:pointer;margin-top:4px;display:none;background:none;border:none;font-family:'Sarabun',sans-serif}
+  .btn-save{width:100%;padding:11px;font-size:15px;font-weight:600;border-radius:8px;border:none;background:#1d6fa8;color:#fff;cursor:pointer;margin-top:4px;font-family:'Sarabun',sans-serif}
+  .btn-save:hover{background:#1558880}
+  .btn-excel{width:100%;padding:11px;font-size:15px;font-weight:600;border-radius:8px;border:none;background:#1e7e4a;color:#fff;cursor:pointer;margin-top:8px;font-family:'Sarabun',sans-serif}
+  .btn-pdf{width:100%;padding:11px;font-size:15px;font-weight:600;border-radius:8px;border:none;background:#1558880;color:#fff;cursor:pointer;margin-top:8px;font-family:'Sarabun',sans-serif;background:#1565c0}
+  .btn-excel:disabled,.btn-pdf:disabled{opacity:0.4;cursor:not-allowed}
+  .btn-excel:hover:not(:disabled){background:#166038}
+  .btn-pdf:hover:not(:disabled){background:#0d47a1}
+  .entry{padding:10px 0;border-bottom:1px solid #f0f2f5;font-size:13px}
+  .entry:last-child{border-bottom:none}
+  .entry-head{display:flex;justify-content:space-between;align-items:flex-start}
+  .del-btn{background:none;border:none;cursor:pointer;color:#bbb;font-size:18px;line-height:1}
+  .del-btn:hover{color:#e53935}
+  .empty{font-size:13px;color:#bbb;text-align:center;padding:14px 0}
+  .badge{background:#e8f1fb;color:#1558880;color:#1565c0;font-size:12px;padding:2px 9px;border-radius:20px;margin-left:6px}
+  .entry-photos{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+  .entry-photo-wrap img{width:100%;height:70px;object-fit:cover;border-radius:8px;border:1px solid #e2e6ea}
+  .entry-photo-cap{font-size:11px;color:#aaa;text-align:center;margin-top:3px}
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+<h1>📋 บันทึกเวลาเข้า-ออกงาน</h1>
+
+<div class="card">
+  <div class="section-title">📅 ข้อมูลวันที่</div>
+  <div class="row2">
+    <div class="field">
+      <label for="emp-name">ชื่อพนักงาน</label>
+      <input type="text" id="emp-name" placeholder="เช่น สมชาย ใจดี">
+    </div>
+    <div class="field">
+      <label for="work-date">วันที่</label>
+      <input type="date" id="work-date">
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="section-title">🕐 เวลาเข้า-ออกงาน</div>
+  <div class="row2">
+    <div class="field">
+      <label for="time-in">เวลาเข้างาน</label>
+      <input type="time" id="time-in">
+    </div>
+    <div class="field">
+      <label for="time-out">เวลาออกงาน</label>
+      <input type="time" id="time-out">
+    </div>
+  </div>
+  <div style="margin-top:12px">
+    <label>ชั่วโมงทำงาน</label>
+    <div class="hours-box" id="hours-display">— กรอกเวลาเข้า-ออกเพื่อคำนวณ</div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="section-title">📷 รูปภาพหลักฐาน</div>
+  <div class="row2">
+    <div class="field">
+      <label>รูปเข้างาน</label>
+      <div class="photo-area" id="area-in">
+        <input type="file" accept="image/*" id="photo-in" onchange="previewPhoto('in',this)">
+        <div class="icon">📷</div>
+        <div class="ph-label">แตะเพื่อเลือกรูป</div>
+        <img class="photo-preview" id="preview-in" alt="รูปเข้างาน">
+      </div>
+      <button class="remove-btn" id="remove-in" onclick="removePhoto('in')">✕ ลบรูป</button>
+    </div>
+    <div class="field">
+      <label>รูปออกงาน</label>
+      <div class="photo-area" id="area-out">
+        <input type="file" accept="image/*" id="photo-out" onchange="previewPhoto('out',this)">
+        <div class="icon">📷</div>
+        <div class="ph-label">แตะเพื่อเลือกรูป</div>
+        <img class="photo-preview" id="preview-out" alt="รูปออกงาน">
+      </div>
+      <button class="remove-btn" id="remove-out" onclick="removePhoto('out')">✕ ลบรูป</button>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="section-title">✅ สถานะ</div>
+  <div class="status-row">
+    <button class="status-btn" data-val="ปกติ" data-cls="s-green" onclick="selectStatus(this)">ปกติ</button>
+    <button class="status-btn" data-val="มาสาย" data-cls="s-amber" onclick="selectStatus(this)">มาสาย</button>
+    <button class="status-btn" data-val="ล่วงเวลา" data-cls="s-green" onclick="selectStatus(this)">ล่วงเวลา</button>
+    <button class="status-btn" data-val="ลาป่วย" data-cls="s-red" onclick="selectStatus(this)">ลาป่วย</button>
+    <button class="status-btn" data-val="ลากิจ" data-cls="s-amber" onclick="selectStatus(this)">ลากิจ</button>
+  </div>
+</div>
+
+<div class="card">
+  <div class="section-title">📝 หมายเหตุ</div>
+  <textarea id="note" placeholder="หมายเหตุเพิ่มเติม (ถ้ามี)"></textarea>
+</div>
+
+<button class="btn-save" onclick="saveEntry()">💾 บันทึกข้อมูล</button>
+
+<div class="card" style="margin-top:12px">
+  <div class="section-title">
+    📋 รายการที่บันทึก
+    <span class="badge" id="entry-count">0 รายการ</span>
+  </div>
+  <div id="entries-list"><div class="empty">ยังไม่มีข้อมูล</div></div>
+  <button class="btn-excel" id="btn-excel" onclick="exportExcel()" disabled>📊 ส่งออกเป็น Excel (.xlsx)</button>
+  <button class="btn-pdf" id="btn-pdf" onclick="exportPDF()" disabled>📄 ส่งออกเป็น PDF (พร้อมรูปภาพ)</button>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+let sel='', entries=[], pIn=null, pOut=null;
+document.getElementById('work-date').value=new Date().toISOString().split('T')[0];
+
+function previewPhoto(t,inp){
+  const f=inp.files[0]; if(!f)return;
+  const r=new FileReader();
+  r.onload=e=>{
+    const d=e.target.result;
+    const pv=document.getElementById('preview-'+t);
+    const rb=document.getElementById('remove-'+t);
+    const ar=document.getElementById('area-'+t);
+    pv.src=d; pv.style.display='block';
+    rb.style.display='inline-block';
+    ar.querySelector('.icon').style.display='none';
+    ar.querySelector('.ph-label').style.display='none';
+    if(t==='in') pIn=d; else pOut=d;
+  };
+  r.readAsDataURL(f);
+}
+
+function removePhoto(t){
+  document.getElementById('preview-'+t).style.display='none';
+  document.getElementById('remove-'+t).style.display='none';
+  document.getElementById('area-'+t).querySelector('.icon').style.display='';
+  document.getElementById('area-'+t).querySelector('.ph-label').style.display='';
+  document.getElementById('photo-'+t).value='';
+  if(t==='in') pIn=null; else pOut=null;
+}
+
+function calcH(i,o){
+  if(!i||!o)return null;
+  const[ih,im]=i.split(':').map(Number);
+  const[oh,om]=o.split(':').map(Number);
+  const m=(oh*60+om)-(ih*60+im);
+  if(m<=0)return null;
+  return{h:Math.floor(m/60),m:m%60,t:(m/60).toFixed(1)};
+}
+
+document.getElementById('time-in').addEventListener('change',upH);
+document.getElementById('time-out').addEventListener('change',upH);
+
+function upH(){
+  const i=document.getElementById('time-in').value;
+  const o=document.getElementById('time-out').value;
+  const r=calcH(i,o);
+  const el=document.getElementById('hours-display');
+  el.innerHTML=r?`<strong>${r.h} ชั่วโมง ${r.m} นาที</strong> (${r.t} ชม.)`:'— กรอกเวลาเข้า-ออกเพื่อคำนวณ';
+}
+
+function selectStatus(btn){
+  document.querySelectorAll('.status-btn').forEach(b=>b.classList.remove('s-green','s-amber','s-red'));
+  btn.classList.add(btn.dataset.cls);
+  sel=btn.dataset.val;
+}
+
+function saveEntry(){
+  const name=document.getElementById('emp-name').value.trim();
+  const date=document.getElementById('work-date').value;
+  const ti=document.getElementById('time-in').value;
+  const to=document.getElementById('time-out').value;
+  const note=document.getElementById('note').value.trim();
+  if(!name||!date||!ti||!to){alert('กรุณากรอกชื่อ, วันที่, เวลาเข้า และเวลาออกให้ครบ');return;}
+  const r=calcH(ti,to);
+  entries.unshift({name,date,ti,to,hours:r?r.t:'-',status:sel||'-',note,photoIn:pIn,photoOut:pOut});
+  render();
+  document.getElementById('emp-name').value='';
+  document.getElementById('time-in').value='';
+  document.getElementById('time-out').value='';
+  document.getElementById('note').value='';
+  document.getElementById('hours-display').innerHTML='— กรอกเวลาเข้า-ออกเพื่อคำนวณ';
+  document.querySelectorAll('.status-btn').forEach(b=>b.classList.remove('s-green','s-amber','s-red'));
+  sel=''; removePhoto('in'); removePhoto('out');
+}
+
+function delEntry(i){entries.splice(i,1);render();}
+
+function render(){
+  const el=document.getElementById('entries-list');
+  document.getElementById('entry-count').textContent=entries.length+' รายการ';
+  document.getElementById('btn-excel').disabled=!entries.length;
+  document.getElementById('btn-pdf').disabled=!entries.length;
+  if(!entries.length){el.innerHTML='<div class="empty">ยังไม่มีข้อมูล</div>';return;}
+  el.innerHTML=entries.map((e,i)=>`
+    <div class="entry">
+      <div class="entry-head">
+        <div>
+          <div style="font-weight:600">${e.name} <span style="font-weight:400;color:#aaa">${e.date}</span></div>
+          <div style="color:#666;margin-top:3px">${e.ti} – ${e.to} | ${e.hours} ชม. | ${e.status}</div>
+          ${e.note?`<div style="color:#aaa;font-size:12px;margin-top:2px">${e.note}</div>`:''}
+        </div>
+        <button class="del-btn" onclick="delEntry(${i})">🗑</button>
+      </div>
+      ${(e.photoIn||e.photoOut)?`
+      <div class="entry-photos">
+        ${e.photoIn?`<div class="entry-photo-wrap"><img src="${e.photoIn}" alt="เข้างาน"><div class="entry-photo-cap">เข้างาน</div></div>`:'<div></div>'}
+        ${e.photoOut?`<div class="entry-photo-wrap"><img src="${e.photoOut}" alt="ออกงาน"><div class="entry-photo-cap">ออกงาน</div></div>`:'<div></div>'}
+      </div>`:''}
+    </div>`).join('');
+}
+
+function exportExcel(){
+  const wb=XLSX.utils.book_new();
+  const hd=['ลำดับ','ชื่อพนักงาน','วันที่','เวลาเข้างาน','เวลาออกงาน','ชั่วโมงทำงาน','สถานะ','หมายเหตุ','รูปเข้างาน','รูปออกงาน'];
+  const rows=entries.map((e,i)=>[i+1,e.name,e.date,e.ti,e.to,e.hours,e.status,e.note,e.photoIn?'มีรูป':'ไม่มีรูป',e.photoOut?'มีรูป':'ไม่มีรูป']);
+  const ws=XLSX.utils.aoa_to_sheet([hd,...rows]);
+  ws['!cols']=[{wch:6},{wch:20},{wch:12},{wch:12},{wch:12},{wch:14},{wch:10},{wch:24},{wch:12},{wch:12}];
+  XLSX.utils.book_append_sheet(wb,ws,'บันทึกเวลางาน');
+  XLSX.writeFile(wb,`บันทึกเวลางาน_${new Date().toISOString().split('T')[0]}.xlsx`);
+}
+
+async function exportPDF(){
+  const{jsPDF}=window.jspdf;
+  const doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+  const pW=210,mg=14,cW=pW-mg*2;
+  const td=new Date().toLocaleDateString('th-TH',{year:'numeric',month:'long',day:'numeric'});
+  doc.setFontSize(16);doc.setFont('helvetica','bold');
+  doc.text('Work Time Report',pW/2,18,{align:'center'});
+  doc.setFontSize(10);doc.setFont('helvetica','normal');doc.setTextColor(120);
+  doc.text('Export date: '+td,pW/2,24,{align:'center'});
+  doc.text('Total records: '+entries.length,pW/2,29,{align:'center'});
+  doc.setTextColor(0);
+  let y=36;
+  for(let i=0;i<entries.length;i++){
+    const e=entries[i];
+    const hp=e.photoIn||e.photoOut;
+    const bH=hp?78:28;
+    if(y+bH>285){doc.addPage();y=16;}
+    doc.setFillColor(245,247,250);doc.roundedRect(mg,y,cW,bH,2,2,'F');
+    doc.setDrawColor(200);doc.roundedRect(mg,y,cW,bH,2,2,'S');
+    doc.setFont('helvetica','bold');doc.setFontSize(11);doc.setTextColor(30);
+    doc.text(`${i+1}. ${e.name}`,mg+4,y+7);
+    doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(80);
+    doc.text(`Date: ${e.date}   In: ${e.ti}   Out: ${e.to}   Hours: ${e.hours} hrs   Status: ${e.status}`,mg+4,y+13);
+    if(e.note){doc.setTextColor(120);doc.text(`Note: ${e.note}`,mg+4,y+19);}
+    if(hp){
+      const iY=y+23,iH=48,iW=cW/2-6;
+      if(e.photoIn){try{const fm=e.photoIn.split(';')[0].split('/')[1].toUpperCase();doc.addImage(e.photoIn,fm,mg+4,iY,iW,iH);doc.setFontSize(8);doc.setTextColor(100);doc.text('Check-in',mg+4,iY+iH+4);}catch(er){}}
+      if(e.photoOut){try{const fm=e.photoOut.split(';')[0].split('/')[1].toUpperCase();doc.addImage(e.photoOut,fm,mg+cW/2+2,iY,iW,iH);doc.setFontSize(8);doc.setTextColor(100);doc.text('Check-out',mg+cW/2+2,iY+iH+4);}catch(er){}}
+    }
+    y+=bH+5;
+  }
+  doc.save(`บันทึกเวลางาน_${new Date().toISOString().split('T')[0]}.pdf`);
+}
+</script>
+</body>
+</html>
